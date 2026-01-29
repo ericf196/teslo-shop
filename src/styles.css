@@ -1,1 +1,49 @@
 /* You can add global styles to this file, and also import other style files */
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/assets/fonts/montserrat/Montserrat-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@import "tailwindcss";
+@plugin "daisyui";
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@theme {
+  --font-family-sans: 'Montserrat', sans-serif;
+  --animate-fade-in: fadeIn 0.3s ease-in-out;
+  --animate-fade-out: fadeOut 0.3s ease-in-out;
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Clases utilitarias para fadeIn y fadeOut */
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.animate-fade-out {
+  animation: fadeOut 0.3s ease-in-out;
+}
