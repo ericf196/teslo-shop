@@ -1,0 +1,15 @@
+<h1 class="text-2xl font-bold text-white mb-4">Producto (admin)</h1>
+<p class="text-slate-400">ID: <span class="text-slate-200 font-mono">{{ productId() }}</span></p>
+
+
+
+@if(productResource.isLoading()) {
+<div class="flex justify-center items-center h-screen">
+    <span class="loading loading-spinner loading-lg"></span>
+</div>
+}
+
+@if(productResource.hasValue()) {
+<h1 class="text-2xl font-bold">{{ productResource.value().title }}</h1>
+<product-details [product]="productResource.value()!"></product-details>
+}

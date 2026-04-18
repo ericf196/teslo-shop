@@ -9,6 +9,14 @@
         </figure>
       </div>
      }
+
+     @empty {
+      <div class="swiper-slide">
+        <figure>
+          <img [src]="null | productImage" alt="Producto sin imagen" />
+        </figure>
+      </div>
+     }
   </div>
   <!-- If we need pagination -->
   <div class="swiper-pagination"></div>

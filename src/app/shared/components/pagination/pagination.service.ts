@@ -1,7 +1,6 @@
 import { inject, Injectable } from '@angular/core';
-import { rxResource, toSignal } from '@angular/core/rxjs-interop';
-import { ActivatedRoute } from '@angular/router';
-import { ProductsService } from '@products/services/products.service';
+import { Router, ActivatedRoute } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { map, tap } from 'rxjs';
 
 @Injectable({
@@ -10,6 +9,7 @@ import { map, tap } from 'rxjs';
 export class PaginationService {
 
     private activedRoute = inject(ActivatedRoute);
+    private router = inject(Router);
 
     currentPage = toSignal(
         this.activedRoute.queryParams.pipe(
@@ -18,8 +18,14 @@ export class PaginationService {
             tap((page) => console.log('page', page)),
         ),
         { initialValue: 1 }
-    )
+    );
 
-
+    setPage(page: number): void {
+        this.router.navigate([], {
+            relativeTo: this.activedRoute,
+            queryParams: { page },
+            queryParamsHandling: 'merge',
+        });
+    }
 
 }

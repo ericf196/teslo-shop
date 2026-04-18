@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of, tap } from 'rxjs';
-import { ProductsResponse, Product } from '../interfaces/product.interface';
+import { ProductsResponse, Product, ProductGender } from '../interfaces/product.interface';
 import { environment } from '../../../environments/environment';
+import { User } from '@auth/interfaces/user.interface';
 
 const BASE_URL = environment.baseUrl;
 
@@ -11,6 +12,20 @@ interface Options {
   offset?: number;
   gender?: string;
 }
+
+const emptyProduct: Product = {
+  id: 'new',
+  title: '',
+  price: 0,
+  description: '',
+  slug: '',
+  stock: 0,
+  sizes: [],
+  gender: ProductGender.KID,
+  tags: [],
+  images: [],
+  user: {} as User,
+};
 
 @Injectable({
   providedIn: 'root'
@@ -47,7 +62,7 @@ export class ProductsService {
         tap((resp) => console.log(resp)),
         tap((resp) => this.productsCache.set(key, resp)),
         tap((resp) => console.log("productsCache ", this.productsCache)),
-    );
+      );
   }
 
   getProductBySlug(slug: string): Observable<Product> {
@@ -57,6 +72,47 @@ export class ProductsService {
     return this.http.get<Product>(`${BASE_URL}/products/${slug}`).pipe(
       tap((resp) => this.productIndividualCache.set(slug, resp)),
       tap((resp) => console.log("productIndividualCache ", this.productIndividualCache)),
+    );
+  }
+
+  getProductById(id: string): Observable<Product> {
+
+    if (id === 'new') {
+      return of(emptyProduct);
+    }
+    
+    if (this.productIndividualCache.has(id)) {
+      return of(this.productIndividualCache.get(id)!);
+    }
+    return this.http.get<Product>(`${BASE_URL}/products/${id}`).pipe(
+      tap((resp) => this.productIndividualCache.set(id, resp)),
+      tap((resp) => console.log("productIndividualCache ", this.productIndividualCache)),
+    );
+  };
+
+  updateProduct(id: string, productLike: Partial<Product>): Observable<Product> {
+    return this.http.patch<Product>(`${BASE_URL}/products/${id}`, productLike).pipe(
+      tap((product) => this.updateProductInCache(product)),
+    );
+  }
+
+  updateProductInCache(product: Product): void {
+    const productId = product.id;
+
+    this.productIndividualCache.set(productId, product);
+
+    this.productsCache.forEach((productResponse) => {
+      productResponse.products = productResponse.products.map(
+        (currentProduct) =>
+          currentProduct.id === productId ? product : currentProduct
+      );
+
+    });
+  }
+
+  createProduct(productLike: Partial<Product>): Observable<Product> {
+    return this.http.post<Product>(`${BASE_URL}/products`, productLike).pipe(
+      tap((product) => this.updateProductInCache(product)),
     );
   }
 }

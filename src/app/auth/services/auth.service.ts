@@ -47,6 +47,7 @@ export class AuthService {
 
     user = computed<User | null>(() => this._user());
     token = computed<string | null>(() => this._token());
+    isAdmin = computed(() => this._user()?.roles.includes('admin') ?? false);
 
     /**
      * Realiza el login del usuario
